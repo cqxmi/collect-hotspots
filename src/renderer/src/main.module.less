@@ -1,0 +1,38 @@
+.container {
+  display: flex;
+  .left {
+    width: 200px;
+    height: 100vh;
+    padding: 12px;
+    border-right: 1px solid #eeeeee;
+  }
+  .right {
+    flex: 1;
+    height: 100vh;
+    padding: 16px;
+    .rightBox {
+       display: flex;
+        flex-wrap: wrap;
+    }
+  }
+  .columns {
+    display: flex;
+    flex-direction: column;
+  }
+  .column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    background-color: #eeeeee;
+    border-radius: 12px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+  .miniweb {
+    width: fit-content;
+    height: fit-content;
+    margin-bottom: 20px;
+  }
+}
