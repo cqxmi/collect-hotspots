@@ -1,7 +1,7 @@
 {
-  "name": "private-letter",
+  "name": "collect-hotspots",
   "version": "1.0.0",
-  "description": "private-letter",
+  "description": "collect-hotspots",
   "main": "./out/main/index.js",
   "author": "example.com",
   "homepage": "https://electron-vite.org",

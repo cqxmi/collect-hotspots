@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: private-letter
+productName: collect-hotspots
 directories:
   buildResources: build
 files:
@@ -11,7 +11,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: private-letter
+  executableName: collect-hotspots
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

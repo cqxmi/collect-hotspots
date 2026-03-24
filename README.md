@@ -1,4 +1,4 @@
-# private-letter
+# collect-hotspots
 
 An Electron application with React
 
