@@ -8,8 +8,7 @@ export default defineConfig({
     build: {
       rollupOptions: {
         input: {
-          index: resolve('src/preload/index.js'),
-          miniWebView: resolve('src/preload/miniWebView.js')
+          index: resolve('src/preload/index.js')
         },
         output: {
           entryFileNames: '[name].js'
