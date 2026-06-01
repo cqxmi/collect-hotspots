@@ -1,12 +1,13 @@
-import { Button } from 'antd'
+import { Button, message } from 'antd'
 import styles from './main.module.less'
-// import { useImmer } from 'use-immer'
+import { useImmer } from 'use-immer'
 // import { useLatest } from 'ahooks'
 import { useEffect } from 'react'
 import api from '../../api'
+import MiniWebview from '../../components/MiniWebView'
 
 export default function Index() {
-  // const [account, setAccount] = useImmer([])
+  const [account, setAccount] = useImmer([])
   // const latestCountRef = useLatest(account)
 
   const openWindow = () => {
@@ -14,13 +15,26 @@ export default function Index() {
   }
 
   const toGetInfo = async (data) => {
-    // 在这里做一个识别
-    console.log(data)
+    // 做一个识别
+    const res = await api.addAccount({
+      platform: data.domain,
+      cookie: data.cookie
+    })
+    if (res.code === 0) {
+      message.success('添加成功')
+      getAccounts()
+    } else {
+      message.error(res.message)
+    }
   }
 
   const getAccounts = async () => {
     const res = await api.getAccounts()
-    console.log(res)
+    if (res.code === 0) {
+      setAccount(res.data)
+    } else {
+      message.error(res.message)
+    }
   }
 
   useEffect(() => {
@@ -46,7 +60,40 @@ export default function Index() {
           >
             添加账号
           </Button>
-          <div className={styles.columns}></div>
+          {account.length
+            ? account.map((ele) => {
+                return (
+                  <div key={ele.id} className={styles.columns}>
+                    <div>{ele.platform}</div>
+                    <div style={{ marginTop: '6px' }}>
+                      <Button style={{ marginRight: '12px' }} size="small">
+                        开始
+                      </Button>
+                      <Button danger type="primary" size="small">
+                        删除
+                      </Button>
+                    </div>
+                  </div>
+                )
+              })
+            : null}
+        </div>
+        <div className={styles.right}>
+          <div className={styles.rightBox}>
+            {/* {account.map((ele) => {
+              return (
+                <div key={ele.id} className={styles.miniweb}>
+                  <MiniWebview
+                    ele={ele}
+                    onRef={(id, el) => {
+                      webviewRefs.current[id] = el
+                    }}
+                    preloadPath={preloadPath}
+                  />
+                </div>
+              )
+            })} */}
+          </div>
         </div>
       </div>
     </>

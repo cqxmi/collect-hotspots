@@ -4,5 +4,8 @@ export default {
   },
   getAccounts() {
     return window.api.get('/users/getAccounts')
+  },
+  addAccount(params) {
+    return window.api.post('/account/add', params)
   }
 }

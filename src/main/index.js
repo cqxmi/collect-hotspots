@@ -124,8 +124,7 @@ ipcMain.handle('open-child-window', (_, url) => {
 
       mainWindow.webContents.send('child-window-closed', {
         domain: hostname,
-        cookie,
-        cookieObj: JSON.stringify(cookies)
+        cookie: JSON.stringify(cookies)
       })
     } catch (err) {
       console.error('读取临时 cookie 失败', err)
