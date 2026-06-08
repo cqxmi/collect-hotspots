@@ -8,6 +8,11 @@ import { https } from './request'
 
 export const store = new Store()
 
+const preloadUrl = {
+  boss: join(__dirname, '../preload/boss.js'),
+  dy: join(__dirname, '../preload/dy.js')
+}
+
 // 初始化窗口
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -64,7 +69,7 @@ app.on('window-all-closed', () => {
 })
 
 // 打开子窗口
-ipcMain.handle('open-child-window', (_, url) => {
+ipcMain.handle('open-child-window', (_, type, url) => {
   const partition = `temp:${Date.now()}`
 
   const win = new BrowserWindow({
@@ -75,6 +80,14 @@ ipcMain.handle('open-child-window', (_, url) => {
     webPreferences: {
       partition
     }
+  })
+
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    // 当前窗口打开
+    win.loadURL(url)
+
+    // 阻止创建新窗口
+    return { action: 'deny' }
   })
 
   // 缓存最后URL
@@ -96,12 +109,10 @@ ipcMain.handle('open-child-window', (_, url) => {
     try {
       const ses = session.fromPartition(partition)
 
-      console.log('最后URL:', lastUrl)
-
       let hostname = ''
 
       try {
-        hostname = new URL(lastUrl).hostname
+        hostname = new URL(url).hostname
       } catch (e) {
         console.error('解析 hostname 失败', e)
       }
@@ -123,7 +134,7 @@ ipcMain.handle('open-child-window', (_, url) => {
       })
 
       mainWindow.webContents.send('child-window-closed', {
-        domain: hostname,
+        type,
         cookie: JSON.stringify(cookies)
       })
     } catch (err) {
@@ -158,4 +169,28 @@ ipcMain.on('electron-store-set', async (event, key, val) => {
 
 ipcMain.handle('api', (event, method, url, params) => {
   return https(url, params, method)
+})
+
+ipcMain.handle('get-preload-path', () => {
+  return preloadUrl
+})
+
+// 设置cookie
+ipcMain.handle('set-webview-cookie', async (_, id, url, cookies) => {
+  const ses = session.fromPartition(`temp:${id}`)
+  const temp = JSON.parse(cookies)
+  for (const c of temp) {
+    await ses.cookies.set({
+      url, // ⭐ 必须
+      name: c.name,
+      value: c.value,
+      domain: c.domain,
+      path: c.path,
+      secure: c.secure,
+      httpOnly: c.httpOnly,
+      expirationDate: c.expirationDate,
+      sameSite: c.sameSite
+    })
+  }
+  return true
 })

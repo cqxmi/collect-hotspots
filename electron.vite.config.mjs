@@ -8,7 +8,9 @@ export default defineConfig({
     build: {
       rollupOptions: {
         input: {
-          index: resolve('src/preload/index.js')
+          index: resolve('src/preload/index.js'),
+          boss: resolve('src/preload/boss.js'),
+          dy: resolve('src/preload/dy.js')
         },
         output: {
           entryFileNames: '[name].js'

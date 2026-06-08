@@ -7,5 +7,11 @@ export default {
   },
   addAccount(params) {
     return window.api.post('/account/add', params)
+  },
+  delAccount(params) {
+    return window.api.get('/account/del', params)
+  },
+  sendMsg(params) {
+    return window.api.post('/ai/sendMessage', params)
   }
 }

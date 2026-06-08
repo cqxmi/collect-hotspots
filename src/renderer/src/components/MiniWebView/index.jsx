@@ -1,11 +1,15 @@
+/* eslint-disable react/no-unknown-property */
+/* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
 import { useMount } from 'ahooks'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { sleep } from '../../utils/index'
-import { Spin } from 'antd'
 import { useUpdateEffect } from 'ahooks'
+import urls from '../../utils/urls'
+// import api from '../../api'
+// import { message } from 'antd'
 
-export default function MiniWebview({ ele, onRef, preloadPath, addRecord, src }) {
+export default function MiniWebview({ ele, onRef, preloadPaths, src, getReply }) {
   const webviewRef = useRef(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isDone, setIsDone] = useState(false)
@@ -14,7 +18,7 @@ export default function MiniWebview({ ele, onRef, preloadPath, addRecord, src })
 
   const setCookie = async () => {
     await sleep(200)
-    window.electronAPI.setWebviewCookie(ele.id, ele.cookie)
+    window.electronAPI.setWebviewCookie(ele.id, urls[ele.platform], ele.cookie)
     setIsDone(true)
   }
 
@@ -49,27 +53,37 @@ export default function MiniWebview({ ele, onRef, preloadPath, addRecord, src })
   }
 
   // useEffect(() => {
-  //     setTimeout(() => {
-  //         webviewRef.current.openDevTools();
-  //     }, 3000)
+  //   setTimeout(() => {
+  //     webviewRef.current.openDevTools()
+  //   }, 3000)
   // }, [])
 
-  //   useUpdateEffect(() => {
-  //     const webview = webviewRef.current
-  //     if (!webview) return
+  // const getReply = async (pars) => {
+  //   const res = await api.sendMsg({
+  //     company: pars.company,
+  //     msg: pars.msg
+  //   })
+  //   if (res.code === 0) {
+  //   } else {
+  //     message.error(res.message)
+  //   }
+  // }
 
-  //     const handleIpcMessage = (event) => {
-  //       if (event.channel === 'webview-message') {
-  //         console.log('收到 webview preload 消息:', event.args[0].payload.msg)
-  //         addRecord(event.args[0].payload)
-  //       }
-  //     }
-  //     webview.addEventListener('ipc-message', handleIpcMessage)
+  useUpdateEffect(() => {
+    const webview = webviewRef.current
+    if (!webview) return
 
-  //     return () => {
-  //       webview.removeEventListener('ipc-message', handleIpcMessage)
-  //     }
-  //   }, [isDone])
+    const handleIpcMessage = (event) => {
+      if (event.channel === 'webview-message') {
+        getReply(event.args[0].payload)
+      }
+    }
+    webview.addEventListener('ipc-message', handleIpcMessage)
+
+    return () => {
+      webview.removeEventListener('ipc-message', handleIpcMessage)
+    }
+  }, [isDone])
 
   return (
     <div
@@ -100,7 +114,7 @@ export default function MiniWebview({ ele, onRef, preloadPath, addRecord, src })
           ref={webviewRef}
           src={src}
           style={{ width: '100%', height: '100%' }}
-          preload={`file://${preloadPath}`}
+          preload={`file://${preloadPaths[ele.platform]}`}
           partition={`temp:${ele.id}`}
         />
       )}

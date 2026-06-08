@@ -3,7 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 const baseURL = 'http://127.0.0.1:3000'
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  openChildWindow: (url) => ipcRenderer.invoke('open-child-window', url),
+  openChildWindow: (type, url) => ipcRenderer.invoke('open-child-window', type, url),
   onChildWindowClosed: (callback) => {
     const listener = (_, data) => {
       callback(data)
@@ -46,7 +46,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     })
   },
   pwStart: (payload) => ipcRenderer.invoke('pw:start', payload),
-  pwStop: (payload) => ipcRenderer.invoke('pw:stop', payload)
+  pwStop: (payload) => ipcRenderer.invoke('pw:stop', payload),
+  getPreloadPath: () => ipcRenderer.invoke('get-preload-path'),
+  setWebviewCookie: (id, url, cookies) => ipcRenderer.invoke('set-webview-cookie', id, url, cookies)
 })
 
 contextBridge.exposeInMainWorld('api', {
